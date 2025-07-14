@@ -1,0 +1,62 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "scopeName": "text.rbatis.sql.injection",
+    "injectionSelector": "L:text.html.basic, L:text.html.derivative, L:text.xml",
+    "patterns": [
+        {
+            "include": "#rbatis-sql-block"
+        }
+    ],
+    "repository": {
+        "rbatis-sql-block": {
+            "comment": "Finds rbatis tags and injects SQL, ignoring child XML tags.",
+            "begin": "(?ix) # Use extended, case-insensitive mode\n  (<(select|insert|update|delete|sql)\\b) # 1,2: The opening tag\n  ([^>]*?)                               # 3: Any attributes\n  (>)                                       # 4: The closing bracket of the opening tag",
+            "end": "(?i)(</)(\\2)(>)",
+            "beginCaptures": {
+                "1": {
+                    "name": "meta.tag.xml"
+                },
+                "2": {
+                    "name": "entity.name.tag.xml"
+                },
+                "4": {
+                    "name": "punctuation.definition.tag.end.xml"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.definition.tag.begin.xml"
+                },
+                "2": {
+                    "name": "entity.name.tag.xml"
+                },
+                "3": {
+                    "name": "punctuation.definition.tag.end.xml"
+                }
+            },
+            "contentName": "source.sql.embedded.rbatis",
+            "patterns": [
+                {
+                    "comment": "Match rbatis/mybatis control flow and include tags so they are not parsed as SQL.",
+                    "name": "meta.tag.xml.rbatis",
+                    "match": "(?ix)\n  </? # Optional closing slash\n  (include|if|choose|when|otherwise|trim|where|set|foreach|bind|sql)\n  \\b[^>]*? # Any attributes\n  /?>     # Self-closing or normal closing bracket"
+                },
+                {
+                    "comment": "Match rbatis placeholders like #{id}",
+                    "name": "constant.other.placeholder.sql",
+                    "match": "#\\{[^\\}]*\\}"
+                },
+                {
+                    "comment": "Explicitly match and scope the backticks, treating the content inside as a string within the SQL.",
+                    "begin": "`",
+                    "end": "`",
+                    "name": "string.quoted.other.sql"
+                },
+                {
+                    "comment": "Finally, include the base SQL grammar for all other text.",
+                    "include": "source.sql"
+                }
+            ]
+        }
+    }
+}

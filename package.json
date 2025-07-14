@@ -10,10 +10,23 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:rust"
+    "onLanguage:rust",
+    "onLanguage:html"
   ],
   "main": "./dist/extension.js",
-  "contributes": {},
+  "contributes": {
+    "grammars": [
+      {
+        "scopeName": "text.rbatis.sql.injection",
+        "path": "./syntaxes/rbatis-sql.tmLanguage.json",
+        "injectTo": [
+          "text.html.basic",
+          "text.html.derivative",
+          "text.xml"
+        ]
+      }
+    ]
+  },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
     "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",

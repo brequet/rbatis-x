@@ -52,31 +52,33 @@ export class CacheService {
 
             for (let i = 0; i < lines.length; i++) {
                 const attrMatch = ATTR_REGEX.exec(lines[i]);
-                if (attrMatch && i + 1 < lines.length) {
-                    const fnMatch = FN_REGEX.exec(lines[i + 1]);
-                    if (fnMatch) {
-                        const htmlRelativePath = attrMatch[1];
-                        const functionName = fnMatch[1];
+                if (!attrMatch) { continue; }
 
-                        const htmlUri = resolveWorkspacePath(uri, htmlRelativePath);
-                        if (!htmlUri) continue;
+                const fnMatch = FN_REGEX.exec(lines[i + 1]);
+                if (!fnMatch) { continue; }
 
-                        if (!this.index.has(htmlUri.fsPath)) {
-                            this.index.set(htmlUri.fsPath, new Map());
-                        }
+                const htmlRelativePath = attrMatch[1];
+                const functionName = fnMatch[1];
 
-                        const functionPosition = new vscode.Position(i + 1, lines[i + 1].indexOf(functionName));
-                        this.index.get(htmlUri.fsPath)!.set(functionName, {
-                            rustFileUri: uri,
-                            functionName,
-                            functionPosition,
-                        });
-                    }
-                }
+                const htmlUri = resolveWorkspacePath(uri, htmlRelativePath);
+                if (!htmlUri) { continue; }
+
+                this.addToIndex(htmlUri.fsPath, functionName, {
+                    rustFileUri: uri,
+                    functionName,
+                    functionPosition: new vscode.Position(i + 1, lines[i + 1].indexOf(functionName)),
+                });
             }
         } catch (e) {
             Logger.error(`Failed to index file: ${uri.fsPath}`, e);
         }
+    }
+
+    private addToIndex(htmlPath: string, functionName: string, defInfo: RustDefinitionInfo): void {
+        if (!this.index.has(htmlPath)) {
+            this.index.set(htmlPath, new Map());
+        }
+        this.index.get(htmlPath)!.set(functionName, defInfo);
     }
 
     private setupFileWatcher(): void {
