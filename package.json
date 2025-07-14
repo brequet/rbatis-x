@@ -7,11 +7,13 @@
     "vscode": "^1.102.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Formatters"
   ],
   "activationEvents": [
     "onLanguage:rust",
-    "onLanguage:html"
+    "onLanguage:html",
+    "onLanguage:xml"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -25,7 +27,32 @@
           "text.xml"
         ]
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Rbatis-X",
+      "properties": {
+        "rbatis-x.formatting.dialect": {
+          "type": "string",
+          "default": "sql",
+          "description": "The SQL dialect to use for formatting.",
+          "enum": [
+            "sql",
+            "bigquery",
+            "db2",
+            "hive",
+            "mariadb",
+            "mysql",
+            "n1ql",
+            "plsql",
+            "postgresql",
+            "redshift",
+            "spark",
+            "sqlite",
+            "transactsql"
+          ]
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
@@ -42,16 +69,19 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.102.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/vscode": "^1.102.0",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",
-    "eslint": "^9.25.1",
-    "esbuild": "^0.25.3",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^5.8.3",
     "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2"
+    "@vscode/test-electron": "^2.5.2",
+    "esbuild": "^0.25.3",
+    "eslint": "^9.25.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "sql-formatter": "^15.6.6"
   }
 }
