@@ -1,10 +1,8 @@
 import * as vscode from 'vscode';
 import { CacheService } from '../core/cacheService';
+import { DTD_IDENTIFIER, INCLUDE_TAG_REGEX, SQL_TAG_REGEX } from '../core/constants';
 import { Logger } from '../utils/logger';
 
-const SQL_TAG_REGEX = /<(?:select|insert|update|delete)\s+id\s*=\s*"([^"]+)"/;
-const INCLUDE_TAG_REGEX = /<include\s+refid\s*=\s*"([^"]+)"/;
-const DTD_IDENTIFIER = 'mybatis-3-mapper.dtd';
 
 export class HtmlDefinitionProvider implements vscode.DefinitionProvider {
     constructor(private cache: CacheService) { }

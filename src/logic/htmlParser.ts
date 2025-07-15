@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { Logger } from '../utils/logger';
 
+const SQL_TAG_ID_REGEX_TEMPLATE = `<(?:select|insert|update|delete)\\s+id\\s*=\\s*"`;
+
 /**
  * Finds the position of a <select>, <insert>, etc. tag with a specific 'id' attribute.
  * @param fileUri The URI of the HTML/XML file.
@@ -13,7 +15,7 @@ export async function findSqlTagPosition(fileUri: vscode.Uri, functionName: stri
         const lines = fileContent.toString().split(/\r?\n/);
 
         const escapedFunctionName = functionName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const tagRegex = new RegExp(`<(?:select|insert|update|delete)\\s+id\\s*=\\s*"${escapedFunctionName}"`);
+        const tagRegex = new RegExp(`${SQL_TAG_ID_REGEX_TEMPLATE}${escapedFunctionName}"`);
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];

@@ -53,6 +53,18 @@ function reconstructContent(
     return [tagsPart, indentedSql].filter(Boolean).join('\n');
 }
 
+function formatSql(pureSql: string, options: FormatOptions & vscode.FormattingOptions): string {
+    return format(pureSql, {
+        language: options.language,
+        tabWidth: options.tabSize,
+        useTabs: !options.insertSpaces,
+        keywordCase: 'upper',
+        paramTypes: {
+            custom: [{ regex: String.raw`#\{[^}]+\}` }],
+        },
+    });
+}
+
 /**
  * Formats a single rbatis SQL block (e.g., <select>...</select>).
  * @param fullBlock The entire string of the block.
@@ -69,27 +81,16 @@ export function formatRbatisBlock(
     initialIndent: string,
     options: FormatOptions & vscode.FormattingOptions
 ): string {
-    const openingTag = fullBlock.substring(0, fullBlock.indexOf('>') + 1);
     const { sql, otherTags } = extractSqlAndTags(content);
-
-    // If there's no actual SQL to format, return the original block
     if (!sql.trim()) {
         return fullBlock;
     }
 
+    const openingTag = fullBlock.substring(0, fullBlock.indexOf('>') + 1);
     const hasBackticks = sql.trim().startsWith('`');
     const pureSql = unwrapSql(sql);
 
-    const formattedSql = format(pureSql, {
-        language: options.language,
-        tabWidth: options.tabSize,
-        useTabs: !options.insertSpaces,
-        keywordCase: 'upper',
-        paramTypes: {
-            custom: [{ regex: String.raw`#\{[^}]+\}` }],
-        },
-    });
-
+    const formattedSql = formatSql(pureSql, options);
     const rewrappedSql = hasBackticks ? `\`\n${formattedSql}\n\`` : formattedSql;
     const newContent = reconstructContent(rewrappedSql, otherTags, initialIndent, options);
 

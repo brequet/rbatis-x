@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
 import { RbatisContext, RbatisFunction } from '../types';
+import { RUST_FN_REGEX, RUST_HTML_SQL_ATTR_REGEX } from '../core/constants';
 
-const ATTR_REGEX = /#\[html_sql\("([^"]+)"\)\]/;
-const FN_REGEX = /pub\s+async\s+fn\s+(\w+)/;
 const MAX_LINES_TO_SEARCH = 3;
 
 /**
@@ -15,14 +14,14 @@ export function parseRbatisFunctions(content: string): RbatisFunction[] {
     const lines = content.split(/\r?\n/);
 
     for (let i = 0; i < lines.length; i++) {
-        const attrMatch = ATTR_REGEX.exec(lines[i]);
+        const attrMatch = RUST_HTML_SQL_ATTR_REGEX.exec(lines[i]);
         if (!attrMatch) {
             continue;
         }
 
         // Look for the function definition on the next line(s)
         for (let j = i + 1; j < lines.length && j < i + MAX_LINES_TO_SEARCH; j++) {
-            const fnMatch = FN_REGEX.exec(lines[j]);
+            const fnMatch = RUST_FN_REGEX.exec(lines[j]);
             if (fnMatch) {
                 const functionName = fnMatch[1];
                 functions.push({
@@ -50,7 +49,7 @@ export function findRbatisContext(document: vscode.TextDocument, position: vscod
     const currentLine = document.lineAt(position.line);
 
     // Case 1: Cursor is on an html_sql attribute line
-    let attrMatch = ATTR_REGEX.exec(currentLine.text);
+    let attrMatch = RUST_HTML_SQL_ATTR_REGEX.exec(currentLine.text);
     if (attrMatch) {
         const relativePath = attrMatch[1];
         const pathIndex = currentLine.text.indexOf(relativePath);
@@ -58,7 +57,7 @@ export function findRbatisContext(document: vscode.TextDocument, position: vscod
 
         if (pathRange.contains(position)) {
             for (let i = position.line + 1; i < document.lineCount && i < position.line + MAX_LINES_TO_SEARCH; i++) {
-                const fnMatch = FN_REGEX.exec(document.lineAt(i).text);
+                const fnMatch = RUST_FN_REGEX.exec(document.lineAt(i).text);
                 if (fnMatch) {
                     return { functionName: fnMatch[1], relativePath, triggerRange: pathRange };
                 }
@@ -67,7 +66,7 @@ export function findRbatisContext(document: vscode.TextDocument, position: vscod
     }
 
     // Case 2: Cursor is on a function definition line
-    let fnMatch = FN_REGEX.exec(currentLine.text);
+    let fnMatch = RUST_FN_REGEX.exec(currentLine.text);
     if (fnMatch) {
         const functionName = fnMatch[1];
         const nameIndex = currentLine.text.indexOf(functionName);
@@ -75,7 +74,7 @@ export function findRbatisContext(document: vscode.TextDocument, position: vscod
 
         if (nameRange.contains(position)) {
             for (let i = position.line - 1; i >= 0 && i > position.line - MAX_LINES_TO_SEARCH; i--) {
-                attrMatch = ATTR_REGEX.exec(document.lineAt(i).text);
+                attrMatch = RUST_HTML_SQL_ATTR_REGEX.exec(document.lineAt(i).text);
                 if (attrMatch) {
                     return { functionName, relativePath: attrMatch[1], triggerRange: nameRange };
                 }

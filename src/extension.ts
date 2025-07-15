@@ -4,21 +4,7 @@ import { HtmlDefinitionProvider } from './features/htmlDefinitionProvider';
 import { RbatisDefinitionProvider } from './features/rbatisDefinitionProvider';
 import { RbatisFormattingProvider } from './features/rbatisFormattingProvider'; // Import the new provider
 import { Logger } from './utils/logger';
-
-const RUST_FILE_SELECTOR: vscode.DocumentFilter = {
-	scheme: 'file',
-	language: 'rust',
-};
-
-const HTML_FILE_SELECTOR: vscode.DocumentFilter = {
-	scheme: 'file',
-	language: 'html',
-};
-
-const XML_FILE_SELECTOR: vscode.DocumentFilter = {
-	scheme: 'file',
-	language: 'xml',
-};
+import { HTML_FILE_SELECTOR, RUST_FILE_SELECTOR, XML_FILE_SELECTOR } from './core/config';
 
 export async function activate(context: vscode.ExtensionContext) {
 	Logger.log('Activating "rbatis-x" extension.');
