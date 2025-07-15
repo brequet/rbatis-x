@@ -1,4 +1,7 @@
+// src/core/cacheService.ts
+
 import * as vscode from 'vscode';
+import { parseRbatisFunctions } from '../logic/rustParser';
 import { Logger } from '../utils/logger';
 import { resolveWorkspacePath } from '../utils/workspace';
 
@@ -10,9 +13,6 @@ interface RustDefinitionInfo {
 
 // Maps an HTML file path to a map of function IDs to their definitions in Rust
 type RbatisIndex = Map<string, Map<string, RustDefinitionInfo>>;
-
-const ATTR_REGEX = /#\[html_sql\("([^"]+)"\)\]/;
-const FN_REGEX = /pub\s+async\s+fn\s+(\w+)/;
 
 export class CacheService {
     private index: RbatisIndex = new Map();
@@ -32,7 +32,7 @@ export class CacheService {
     private async buildIndex(): Promise<void> {
         if (this.isIndexing) return;
 
-        Logger.log("Building rbatis index...");
+        Logger.log('Building rbatis index...');
         this.isIndexing = true;
         this.index.clear();
 
@@ -48,25 +48,18 @@ export class CacheService {
     private async updateIndexForFile(uri: vscode.Uri): Promise<void> {
         try {
             const content = (await vscode.workspace.fs.readFile(uri)).toString();
-            const lines = content.split(/\r?\n/);
+            const functions = parseRbatisFunctions(content);
 
-            for (let i = 0; i < lines.length; i++) {
-                const attrMatch = ATTR_REGEX.exec(lines[i]);
-                if (!attrMatch) { continue; }
+            for (const func of functions) {
+                const htmlUri = resolveWorkspacePath(uri, func.htmlRelativePath);
+                if (!htmlUri) {
+                    continue;
+                }
 
-                const fnMatch = FN_REGEX.exec(lines[i + 1]);
-                if (!fnMatch) { continue; }
-
-                const htmlRelativePath = attrMatch[1];
-                const functionName = fnMatch[1];
-
-                const htmlUri = resolveWorkspacePath(uri, htmlRelativePath);
-                if (!htmlUri) { continue; }
-
-                this.addToIndex(htmlUri.fsPath, functionName, {
+                this.addToIndex(htmlUri.fsPath, func.functionName, {
                     rustFileUri: uri,
-                    functionName,
-                    functionPosition: new vscode.Position(i + 1, lines[i + 1].indexOf(functionName)),
+                    functionName: func.functionName,
+                    functionPosition: func.functionPosition,
                 });
             }
         } catch (e) {

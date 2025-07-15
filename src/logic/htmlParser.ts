@@ -1,6 +1,12 @@
 import * as vscode from 'vscode';
 import { Logger } from '../utils/logger';
 
+/**
+ * Finds the position of a <select>, <insert>, etc. tag with a specific 'id' attribute.
+ * @param fileUri The URI of the HTML/XML file.
+ * @param functionName The id to search for.
+ * @returns The position of the tag, or null if not found.
+ */
 export async function findSqlTagPosition(fileUri: vscode.Uri, functionName: string): Promise<vscode.Position | null> {
     try {
         const fileContent = await vscode.workspace.fs.readFile(fileUri);
@@ -13,8 +19,7 @@ export async function findSqlTagPosition(fileUri: vscode.Uri, functionName: stri
             const line = lines[i];
             const match = tagRegex.exec(line);
             if (match) {
-                const character = line.indexOf(match[0]);
-                return new vscode.Position(i, character);
+                return new vscode.Position(i, match.index);
             }
         }
 
