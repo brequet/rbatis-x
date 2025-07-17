@@ -17,14 +17,26 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "rbatis-mapper",
+        "aliases": [
+          "Rbatis Mapper",
+          "rbatis-mapper"
+        ],
+        "extensions": [],
+        "configuration": "./language-configuration.json",
+        "embeddedLanguages": {
+          "text.html.basic": "html"
+        }
+      }
+    ],
     "grammars": [
       {
         "scopeName": "text.rbatis.sql.injection",
         "path": "./syntaxes/rbatis-sql.tmLanguage.json",
         "injectTo": [
-          "text.html.basic",
-          "text.html.derivative",
-          "text.xml"
+          "rbatis-mapper"
         ]
       }
     ],
