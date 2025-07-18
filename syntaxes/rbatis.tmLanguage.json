@@ -3,16 +3,16 @@
     "scopeName": "text.xml.rbatis",
     "patterns": [
         {
-            "include": "#rbatis-sql-injection"
+            "include": "#rbatis-sql-block"
         },
         {
             "include": "text.xml"
         }
     ],
     "repository": {
-        "rbatis-sql-injection": {
-            "comment": "Injects SQL into rbatis data manipulation tags, layering over the base XML.",
-            "begin": "(?i)(<(select|insert|update|delete|sql)\\b[^>]*>)",
+        "rbatis-sql-block": {
+            "comment": "Finds rbatis data tags and treats their content as a mix of SQL and special XML.",
+            "begin": "(?ix) (<(select|insert|update|delete|sql)\\b)",
             "end": "(?i)(</\\2>)",
             "beginCaptures": {
                 "0": {
@@ -32,23 +32,48 @@
                     ]
                 }
             },
-            "contentName": "source.sql.embedded.rbatis",
             "patterns": [
                 {
-                    "comment": "Capture rbatis control tags so the SQL parser ignores them, but highlight them as XML.",
-                    "match": "(?i)</?(include|if|choose|when|otherwise|trim|where|set|foreach|bind|continue|break)\\b[^>]*>",
-                    "name": "meta.tag.xml"
+                    "include": "#rbatis-control-tags"
                 },
                 {
-                    "comment": "Highlight rbatis parameter placeholders.",
-                    "name": "variable.parameter.sql.rbatis",
-                    "match": "#\\{[^\\}]*\\}"
+                    "include": "#rbatis-placeholders"
                 },
                 {
-                    "comment": "Finally, apply the standard SQL grammar to the remaining content.",
                     "include": "source.sql"
                 }
             ]
+        },
+        "rbatis-control-tags": {
+            "comment": "Highlights rbatis control tags like <include> as standard XML tags.",
+            "begin": "(?i)(<)(/?)(include|if|choose|when|otherwise|trim|where|set|foreach|bind|continue|break)\\b",
+            "end": "(>)",
+            "beginCaptures": {
+                "1": {
+                    "name": "punctuation.definition.tag.begin.xml"
+                },
+                "2": {
+                    "name": "punctuation.definition.tag.xml"
+                },
+                "3": {
+                    "name": "entity.name.tag.xml"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.definition.tag.end.xml"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "text.xml#attributes"
+                }
+            ]
+        },
+        "rbatis-placeholders": {
+            "comment": "Highlights rbatis parameter placeholders like #{id}.",
+            "name": "variable.parameter.sql.rbatis",
+            "match": "#\\{[^\\}]*\\}"
         }
     }
 }
