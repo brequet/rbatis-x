@@ -11,45 +11,44 @@
     ],
     "repository": {
         "rbatis-sql-injection": {
-            "comment": "Injects SQL into rbatis data manipulation tags.",
+            "comment": "Injects SQL into rbatis data manipulation tags, layering over the base XML.",
             "begin": "(?i)(<(select|insert|update|delete|sql)\\b[^>]*>)",
             "end": "(?i)(</\\2>)",
             "beginCaptures": {
-                "1": {
-                    "name": "meta.tag.xml"
+                "0": {
+                    "patterns": [
+                        {
+                            "include": "text.xml"
+                        }
+                    ]
                 }
             },
             "endCaptures": {
-                "1": {
-                    "name": "meta.tag.xml"
+                "0": {
+                    "patterns": [
+                        {
+                            "include": "text.xml"
+                        }
+                    ]
                 }
             },
             "contentName": "source.sql.embedded.rbatis",
             "patterns": [
                 {
-                    "include": "#rbatis-control-tags"
+                    "comment": "Capture rbatis control tags so the SQL parser ignores them, but highlight them as XML.",
+                    "match": "(?i)</?(include|if|choose|when|otherwise|trim|where|set|foreach|bind|continue|break)\\b[^>]*>",
+                    "name": "meta.tag.xml"
                 },
                 {
-                    "include": "#rbatis-placeholders"
+                    "comment": "Highlight rbatis parameter placeholders.",
+                    "name": "variable.parameter.sql.rbatis",
+                    "match": "#\\{[^\\}]*\\}"
                 },
                 {
+                    "comment": "Finally, apply the standard SQL grammar to the remaining content.",
                     "include": "source.sql"
                 }
             ]
-        },
-        "rbatis-control-tags": {
-            "comment": "Highlights rbatis control flow tags so they are not parsed as SQL.",
-            "patterns": [
-                {
-                    "name": "meta.tag.control.rbatis.xml",
-                    "match": "(?i)</?(include|if|choose|when|otherwise|trim|where|set|foreach|bind|continue|break)\\b[^>]*>"
-                }
-            ]
-        },
-        "rbatis-placeholders": {
-            "comment": "Highlights rbatis/mybatis parameter placeholders like #{id}.",
-            "name": "variable.parameter.sql.rbatis",
-            "match": "#\\{[^\\}]*\\}"
         }
     }
 }
