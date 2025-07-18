@@ -1,6 +1,10 @@
-import { format } from 'sql-formatter';
+import { format, FormatOptionsWithLanguage, SqlLanguage } from 'sql-formatter';
 import * as vscode from 'vscode';
 import { FormatOptions } from '../types';
+
+interface RbatisFormatOptions {
+    language: SqlLanguage;
+}
 
 /**
  * Extracts the core SQL content from a block, separating it from other XML tags.
@@ -79,20 +83,33 @@ export function formatRbatisBlock(
     content: string,
     tagName: string,
     initialIndent: string,
-    options: FormatOptions & vscode.FormattingOptions
+    vscodeOptions: FormatOptions & vscode.FormattingOptions,
+    rbatisOptions: RbatisFormatOptions
 ): string {
     const { sql, otherTags } = extractSqlAndTags(content);
     if (!sql.trim()) {
-        return fullBlock;
+        return fullBlock; // Return original if there's no SQL to format
     }
 
     const openingTag = fullBlock.substring(0, fullBlock.indexOf('>') + 1);
     const hasBackticks = sql.trim().startsWith('`');
     const pureSql = unwrapSql(sql);
 
-    const formattedSql = formatSql(pureSql, options);
+    // Build the final, type-safe options object specifically for sql-formatter
+    const formatterOptions: FormatOptionsWithLanguage = {
+        language: rbatisOptions.language,
+        tabWidth: vscodeOptions.tabSize,
+        useTabs: !vscodeOptions.insertSpaces,
+        keywordCase: 'upper',
+        paramTypes: {
+            custom: [{ regex: String.raw`#\{[^}]+\}` }], // Recognize #{...} as parameters
+        },
+    };
+
+    const formattedSql = format(pureSql, formatterOptions);
+
     const rewrappedSql = hasBackticks ? `\`\n${formattedSql}\n\`` : formattedSql;
-    const newContent = reconstructContent(rewrappedSql, otherTags, initialIndent, options);
+    const newContent = reconstructContent(rewrappedSql, otherTags, initialIndent, vscodeOptions);
 
     return `${openingTag}\n${newContent}\n${initialIndent}</${tagName}>`;
 }

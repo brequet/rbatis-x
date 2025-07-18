@@ -1,0 +1,55 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "scopeName": "text.xml.rbatis",
+    "patterns": [
+        {
+            "include": "#rbatis-sql-injection"
+        },
+        {
+            "include": "text.xml"
+        }
+    ],
+    "repository": {
+        "rbatis-sql-injection": {
+            "comment": "Injects SQL into rbatis data manipulation tags.",
+            "begin": "(?i)(<(select|insert|update|delete|sql)\\b[^>]*>)",
+            "end": "(?i)(</\\2>)",
+            "beginCaptures": {
+                "1": {
+                    "name": "meta.tag.xml"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "meta.tag.xml"
+                }
+            },
+            "contentName": "source.sql.embedded.rbatis",
+            "patterns": [
+                {
+                    "include": "#rbatis-control-tags"
+                },
+                {
+                    "include": "#rbatis-placeholders"
+                },
+                {
+                    "include": "source.sql"
+                }
+            ]
+        },
+        "rbatis-control-tags": {
+            "comment": "Highlights rbatis control flow tags so they are not parsed as SQL.",
+            "patterns": [
+                {
+                    "name": "meta.tag.control.rbatis.xml",
+                    "match": "(?i)</?(include|if|choose|when|otherwise|trim|where|set|foreach|bind|continue|break)\\b[^>]*>"
+                }
+            ]
+        },
+        "rbatis-placeholders": {
+            "comment": "Highlights rbatis/mybatis parameter placeholders like #{id}.",
+            "name": "variable.parameter.sql.rbatis",
+            "match": "#\\{[^\\}]*\\}"
+        }
+    }
+}

@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import { CacheService } from './core/cacheService';
+import { RBATIS_LANGUAGE_ID } from './core/config';
+import { setLanguageMode } from './core/language';
 import { HtmlDefinitionProvider } from './features/htmlDefinitionProvider';
 import { RbatisDefinitionProvider } from './features/rbatisDefinitionProvider';
 import { RbatisFormattingProvider } from './features/rbatisFormattingProvider'; // Import the new provider
 import { Logger } from './utils/logger';
-import { RBATIS_LANGUAGE_ID } from './core/config';
-import { setLanguageMode } from './core/language';
 
 export const RUST_FILE_SELECTOR = { scheme: 'file', language: 'rust' };
 export const HTML_FILE_SELECTOR = { scheme: 'file', language: 'html' };
@@ -20,7 +20,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const rustDefinitionProvider = new RbatisDefinitionProvider();
 	const htmlDefinitionProvider = new HtmlDefinitionProvider(cacheService);
-	const formattingProvider = new RbatisFormattingProvider(); // Instantiate the provider
+	const formattingProvider = new RbatisFormattingProvider();
 
 	context.subscriptions.push(
 		vscode.languages.registerDefinitionProvider(RUST_FILE_SELECTOR, rustDefinitionProvider),

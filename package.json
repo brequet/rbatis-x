@@ -7,7 +7,7 @@
     "vscode": "^1.102.0"
   },
   "categories": [
-    "Other",
+    "Programming Languages",
     "Formatters"
   ],
   "activationEvents": [
@@ -26,24 +26,23 @@
         ],
         "extensions": [],
         "configuration": "./language-configuration.json",
-        "embeddedLanguages": {
-          "text.html.basic": "html"
+        "icon": {
+          "light": "./icons/rbatis-icon.svg",
+          "dark": "./icons/rbatis-icon.svg"
         }
       }
     ],
     "grammars": [
       {
-        "scopeName": "text.rbatis.sql.injection",
-        "path": "./syntaxes/rbatis-sql.tmLanguage.json",
-        "injectTo": [
-          "rbatis-mapper"
-        ]
+        "language": "rbatis-mapper",
+        "scopeName": "text.xml.rbatis",
+        "path": "./syntaxes/rbatis.tmLanguage.json"
       }
     ],
     "configuration": {
-      "title": "Rbatis-X",
+      "title": "Rbatis Mapper Support",
       "properties": {
-        "rbatis-x.formatting.dialect": {
+        "rbatis-mapper.formatting.dialect": {
           "type": "string",
           "default": "sql",
           "description": "The SQL dialect to use for formatting.",

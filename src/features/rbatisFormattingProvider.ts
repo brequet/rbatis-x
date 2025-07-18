@@ -12,8 +12,8 @@ export class RbatisFormattingProvider implements vscode.DocumentFormattingEditPr
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         const edits: vscode.TextEdit[] = [];
         const documentText = document.getText();
-        const formatOptions = {
-            ...options,
+
+        const rbatisOptions = {
             language: this.getFormatterLanguage(),
         };
 
@@ -32,9 +32,19 @@ export class RbatisFormattingProvider implements vscode.DocumentFormattingEditPr
 
             const initialIndent = getIndentation(document, range.start.line);
 
-            const formattedBlock = formatRbatisBlock(fullBlock, content, tagName, initialIndent, formatOptions);
+            const formattedBlock = formatRbatisBlock(
+                fullBlock,
+                content,
+                tagName,
+                initialIndent,
+                options, // Pass vscode options
+                rbatisOptions // Pass our custom options
+            );
 
-            edits.push(vscode.TextEdit.replace(range, formattedBlock));
+            // Only apply edit if the content has changed
+            if (formattedBlock !== fullBlock) {
+                edits.push(vscode.TextEdit.replace(range, formattedBlock));
+            }
         }
 
         return edits;
@@ -42,6 +52,7 @@ export class RbatisFormattingProvider implements vscode.DocumentFormattingEditPr
 
     private getFormatterLanguage(): SqlLanguage {
         const config = vscode.workspace.getConfiguration(CONFIG_SECTION_FORMATTING);
+        // The enum values in package.json should match the SqlLanguage type
         return (config.get('dialect') as SqlLanguage) || 'sql';
     }
 }
