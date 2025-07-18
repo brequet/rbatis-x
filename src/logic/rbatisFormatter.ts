@@ -83,7 +83,7 @@ export function formatRbatisBlock(
     content: string,
     tagName: string,
     initialIndent: string,
-    vscodeOptions: FormatOptions & vscode.FormattingOptions,
+    vscodeOptions: vscode.FormattingOptions,
     rbatisOptions: RbatisFormatOptions
 ): string {
     const { sql, otherTags } = extractSqlAndTags(content);

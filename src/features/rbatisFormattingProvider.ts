@@ -37,11 +37,10 @@ export class RbatisFormattingProvider implements vscode.DocumentFormattingEditPr
                 content,
                 tagName,
                 initialIndent,
-                options, // Pass vscode options
-                rbatisOptions // Pass our custom options
+                options,
+                rbatisOptions
             );
 
-            // Only apply edit if the content has changed
             if (formattedBlock !== fullBlock) {
                 edits.push(vscode.TextEdit.replace(range, formattedBlock));
             }
