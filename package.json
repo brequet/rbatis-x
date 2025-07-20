@@ -29,7 +29,8 @@
         "icon": {
           "light": "./icons/rbatis-icon.svg",
           "dark": "./icons/rbatis-icon.svg"
-        }
+        },
+        "firstLine": ".*mybatis-3-mapper\\.dtd.*"
       }
     ],
     "grammars": [
