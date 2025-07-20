@@ -3,6 +3,11 @@
   "displayName": "rbatis-x",
   "description": "rbatis-x aims to bring some better DX when using rbatis rust crates in",
   "version": "0.0.1",
+  "publisher": "brequet",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brequet/rbatis-x.git"
+  },
   "engines": {
     "vscode": "^1.102.0"
   },
@@ -10,6 +15,7 @@
     "Programming Languages",
     "Formatters"
   ],
+  "icon": "icons/rbatis-icon.png",
   "activationEvents": [
     "onLanguage:rust",
     "onLanguage:html",
@@ -78,7 +84,8 @@
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "publish": "vsce publish --no-dependencies"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -94,6 +101,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "sql-formatter": "^15.6.6"
+    "sql-formatter": "^15.6.6",
+    "sql-parser-cst": "^0.33.1"
   }
 }

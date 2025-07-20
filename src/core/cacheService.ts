@@ -72,7 +72,7 @@ export class CacheService {
 
             for (const func of functions) {
                 const htmlUri = resolveWorkspacePath(uri, func.htmlRelativePath);
-                if (!htmlUri) continue;
+                if (!htmlUri) { continue; };
 
                 const defInfo: RustDefinitionInfo = {
                     rustFileUri: uri,
@@ -133,7 +133,7 @@ export class CacheService {
 
         for (const htmlPath of affectedHtmlPaths) {
             const functions = this.index.get(htmlPath);
-            if (!functions) continue;
+            if (!functions) { continue; };
 
             for (const [funcId, defInfo] of functions.entries()) {
                 if (defInfo.rustFileUri.fsPath === rustPath) {

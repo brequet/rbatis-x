@@ -11,6 +11,9 @@ importers:
       sql-formatter:
         specifier: ^15.6.6
         version: 15.6.6
+      sql-parser-cst:
+        specifier: ^0.33.1
+        version: 0.33.1
     devDependencies:
       '@types/mocha':
         specifier: ^10.0.10
@@ -1451,6 +1454,9 @@ packages:
   sql-formatter@15.6.6:
     resolution: {integrity: sha512-bZydXEXhaNDQBr8xYHC3a8thwcaMuTBp0CkKGjwGYDsIB26tnlWeWPwJtSQ0TEwiJcz9iJJON5mFPkx7XroHcg==}
     hasBin: true
+
+  sql-parser-cst@0.33.1:
+    resolution: {integrity: sha512-7PHLI98bo86S740GQWlerh9GHu10dbMqDo1jBCXVlGB/nc55WgIAeoVrp0jzgK+WikycE9iGUUKkSuFNxj8w3Q==}
 
   stdin-discarder@0.2.2:
     resolution: {integrity: sha512-UhDfHmA92YAlNnCfhmq0VeNL5bDbiZGg7sZ2IvPsXubGkiNa9EC+tUTsjBRsYUAz87btI6/1wf4XoVvQ3uRnmQ==}
@@ -3184,6 +3190,8 @@ snapshots:
     dependencies:
       argparse: 2.0.1
       nearley: 2.20.1
+
+  sql-parser-cst@0.33.1: {}
 
   stdin-discarder@0.2.2: {}
 
